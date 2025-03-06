@@ -1373,6 +1373,16 @@ namespace Content.Shared.CCVar
         public static readonly CVarDef<int> WhitelistMaxPlayers =
             CVarDef.Create("whitelist.max_players", int.MaxValue, CVar.SERVERONLY);
 
+        /// <summary>
+        /// If true, enable the character whitelist. Only players added to the
+        /// main server whitelist is eligible to play whitelisted characters.
+        /// Obviously, if the server whitelist is enabled, everyone playing on
+        /// the server will need to be whitelisted and so this will not have
+        /// any additional effects.
+        /// </summary>
+        public static readonly CVarDef<bool> CharacterWhitelistEnabled =
+            CVarDef.Create("whitelist.character_enabled", true, CVar.REPLICATED);
+
         /*
          * VOTE
          */

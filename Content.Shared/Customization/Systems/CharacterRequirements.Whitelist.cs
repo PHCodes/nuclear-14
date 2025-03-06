@@ -23,6 +23,6 @@ public sealed partial class CharacterWhitelistRequirement : CharacterRequirement
         out FormattedMessage? reason, int depth = 0)
     {
         reason = FormattedMessage.FromMarkup(Loc.GetString("character-whitelist-requirement", ("inverted", Inverted)));
-        return !configManager.GetCVar(CCVars.WhitelistEnabled) || whitelisted;
+        return !configManager.GetCVar(CCVars.CharacterWhitelistEnabled) || whitelisted;
     }
 }
