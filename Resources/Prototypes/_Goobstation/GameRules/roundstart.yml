@@ -18,5 +18,3 @@
       max: 4
       playerRatio: 12
       lateJoinAdditional: true
-      mindRoles:
-      - MindRoleChangeling
