@@ -56,8 +56,6 @@ public sealed partial class ChangelingRuleSystem : GameRuleSystem<ChangelingRule
         if (!_mind.TryGetMind(target, out var mindId, out var mind))
             return false;
 
-        _role.MindAddRole(mindId, mindRole.Id, mind, true);
-
         // briefing
         if (TryComp<MetaDataComponent>(target, out var metaData))
         {
@@ -65,9 +63,6 @@ public sealed partial class ChangelingRuleSystem : GameRuleSystem<ChangelingRule
             var briefingShort = Loc.GetString("changeling-role-greeting-short", ("name", metaData?.EntityName ?? "Unknown"));
 
             _antag.SendBriefing(target, briefing, Color.Yellow, BriefingSound);
-
-            if (_role.MindHasRole<ChangelingRoleComponent>(mindId, out var mr))
-                AddComp(mr.Value, new RoleBriefingComponent { Briefing = briefingShort }, overwrite: true);
         }
         // hivemind stuff
         _npcFaction.RemoveFaction(target, NanotrasenFactionId, false);
