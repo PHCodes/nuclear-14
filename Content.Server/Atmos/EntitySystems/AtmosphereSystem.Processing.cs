@@ -301,7 +301,6 @@ namespace Content.Server.Atmos.EntitySystems
             var number = 0;
             while (atmosphere.CurrentRunTiles.TryDequeue(out var tile))
             {
-                EqualizePressureInZone(ent, tile, atmosphere.UpdateCounter, frameTime);
 
                 if (number++ < LagCheckIterations)
                     continue;
@@ -412,7 +411,6 @@ namespace Content.Server.Atmos.EntitySystems
 
             while (atmosphere.CurrentRunTiles.TryDequeue(out var tile))
             {
-                HighPressureMovements(ent, tile, bodies, xforms, pressureQuery, metas, projectileQuery, sumGravity);
                 atmosphere.HighPressureDelta.Remove(tile);
 
                 if (number++ < LagCheckIterations)
