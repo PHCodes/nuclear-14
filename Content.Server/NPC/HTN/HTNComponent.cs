@@ -37,6 +37,12 @@ public sealed partial class HTNComponent : NPCComponent
     [ViewVariables(VVAccess.ReadWrite)]
     public TimeSpan NextPlanTime;
 
+    /// <summary>
+    /// How much longer until we can try re-planning. This will happen even during update in case something changed.
+    /// </summary>
+    [ViewVariables(VVAccess.ReadWrite)]
+    public float PlanAccumulator = 0f;
+
     [ViewVariables]
     public HTNPlanJob? PlanningJob = null;
 
@@ -47,4 +53,10 @@ public sealed partial class HTNComponent : NPCComponent
     /// Is this NPC currently planning?
     /// </summary>
     [ViewVariables] public bool Planning => PlanningJob != null;
+    
+    /// <summary>
+    /// Determines whether plans should be made / updated for this entity
+    /// </summary>
+    [DataField]
+    public bool Enabled = true;
 }
