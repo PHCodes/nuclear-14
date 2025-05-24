@@ -151,51 +151,55 @@ public sealed class NPCJukeSystem : EntitySystem
                 if (cdRemaining < attackCooldown * 0.45f)
                     return;
 
-                // If we get whacky boss mobs might need nearestpos that's more of a PITA
-                // so will just use this for now.
-                var obstacleDirection = _transform.GetWorldPosition(melee.Target) - args.WorldPosition;
-
-                if (obstacleDirection == Vector2.Zero)
-                    obstacleDirection = _random.NextVector2();
-
-                // If they're moving away then pursue anyway.
-                // If just hit then always back up a bit.
-                if (cdRemaining < attackCooldown * 0.90f &&
-                    _physicsQuery.TryGetComponent(melee.Target, out var targetPhysics) &&
-                    Vector2.Dot(targetPhysics.LinearVelocity, obstacleDirection) > 0f)
+                if (melee.Target.Valid != false)
                 {
-                    return;
+                    // If we get whacky boss mobs might need nearestpos that's more of a PITA
+                    // so will just use this for now.
+                    var obstacleDirection = _transform.GetWorldPosition(melee.Target) - args.WorldPosition;
+
+                    if (obstacleDirection == Vector2.Zero)
+                        obstacleDirection = _random.NextVector2();
+
+                    // If they're moving away then pursue anyway.
+                    // If just hit then always back up a bit.
+                    if (cdRemaining < attackCooldown * 0.90f &&
+                        _physicsQuery.TryGetComponent(melee.Target, out var targetPhysics) &&
+                        Vector2.Dot(targetPhysics.LinearVelocity, obstacleDirection) > 0f)
+                    {
+                        return;
+                    }
+
+                    if (cdRemaining < TimeSpan.FromSeconds(1f / _melee.GetAttackRate(weaponUid, uid, weapon)) * 0.45f)
+                        return;
+
+                    // TODO: Probably add in our bounds and target bounds for ideal distance.
+                    var idealDistance = weapon.Range * 4f;
+                    var obstacleDistance = obstacleDirection.Length();
+
+                    if (obstacleDistance > idealDistance || obstacleDistance == 0f)
+                    {
+                        // Don't want to get too far.
+                        return;
+                    }
+
+                    obstacleDirection = args.OffsetRotation.RotateVec(obstacleDirection);
+                    var norm = obstacleDirection.Normalized();
+
+                    var weight = obstacleDistance <= args.Steering.Radius
+                        ? 1f
+                        : (idealDistance - obstacleDistance) / idealDistance;
+
+                    for (var i = 0; i < SharedNPCSteeringSystem.InterestDirections; i++)
+                    {
+                        var result = -Vector2.Dot(norm, NPCSteeringSystem.Directions[i]) * weight;
+
+                        if (result < 0f)
+                            continue;
+
+                        args.Steering.Interest[i] = MathF.Max(args.Steering.Interest[i], result);
+                    }
                 }
 
-                if (cdRemaining < TimeSpan.FromSeconds(1f / _melee.GetAttackRate(weaponUid, uid, weapon)) * 0.45f)
-                    return;
-
-                // TODO: Probably add in our bounds and target bounds for ideal distance.
-                var idealDistance = weapon.Range * 4f;
-                var obstacleDistance = obstacleDirection.Length();
-
-                if (obstacleDistance > idealDistance || obstacleDistance == 0f)
-                {
-                    // Don't want to get too far.
-                    return;
-                }
-
-                obstacleDirection = args.OffsetRotation.RotateVec(obstacleDirection);
-                var norm = obstacleDirection.Normalized();
-
-                var weight = obstacleDistance <= args.Steering.Radius
-                    ? 1f
-                    : (idealDistance - obstacleDistance) / idealDistance;
-
-                for (var i = 0; i < SharedNPCSteeringSystem.InterestDirections; i++)
-                {
-                    var result = -Vector2.Dot(norm, NPCSteeringSystem.Directions[i]) * weight;
-
-                    if (result < 0f)
-                        continue;
-
-                    args.Steering.Interest[i] = MathF.Max(args.Steering.Interest[i], result);
-                }
             }
 
             args.Steering.CanSeek = false;
