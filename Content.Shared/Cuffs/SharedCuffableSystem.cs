@@ -783,4 +783,8 @@ namespace Content.Shared.Cuffs
         {
         }
     }
+    [Serializable, NetSerializable]
+    public sealed partial class AddCuffDoAfterEvent : SimpleDoAfterEvent
+    {
+    }
 }
